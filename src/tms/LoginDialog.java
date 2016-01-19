@@ -134,6 +134,7 @@ public class LoginDialog extends javax.swing.JDialog {
             if (tms.getDBAdapter().authorizeUser(credentials)) {
                 // Hide the dialog
                 setVisible(false);
+                tms.setCredentials(credentials);
                 // Set valid credentials for TMS UI object and display the window
                 tms.taskController.setCredentials(credentials);
                 // Load tasks from database

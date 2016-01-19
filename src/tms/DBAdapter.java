@@ -153,7 +153,7 @@ public class DBAdapter {
         tasks.toArray(taskArray);
         return taskArray;
     }
-
+    
     // Get the user ID of the database record for user
     public int getUserId(Credentials credentials) {
         try {
@@ -182,7 +182,7 @@ public class DBAdapter {
             connect = DriverManager.getConnection("jdbc:mysql://" + dbServer + "/" + dbName + "?"
                     + "user=" + username + "&password=" + password);
             statement = connect.createStatement();
-            preparedStatement = connect.prepareStatement("insert into " + dbName + ".task values (default, ?, ?, ?) ;");
+            preparedStatement = connect.prepareStatement("insert into " + dbName + ".task values (default, ?, ?, ?, NULL) ;");
             preparedStatement.setString(1, Integer.toString(userId));
             preparedStatement.setString(2, "0"); // to-do list id is 0
             preparedStatement.setString(3, s);
@@ -235,5 +235,53 @@ public class DBAdapter {
             closeDBConnection();
         }
         return true;
+    }
+
+    public String getXHTML(String task, Credentials credentials) {
+        String xhtml = null;
+        try {
+            int userId = getUserId(credentials);
+            connect = DriverManager.getConnection("jdbc:mysql://" + dbServer + "/" + dbName + "?"
+                    + "user=" + username + "&password=" + password);
+            statement = connect.createStatement();           
+            preparedStatement = connect.prepareStatement("select html from " + dbName + ".task where user_id = ? and task = ? ;");
+            preparedStatement.setString(1, Integer.toString(userId));
+            preparedStatement.setString(2, task);
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                xhtml = resultSet.getString("html");
+            }
+            resultSet = null;
+        } catch (SQLException e) {
+            System.err.println("SQLException: " + e.getMessage());
+            //return false;
+        } finally {
+            closeDBConnection();
+        }
+        if(xhtml == null) {
+            // Default template
+            xhtml = "<html>\n<head>\n\t<title>" + task + "</title>\n</head>\n<body>\n"
+                + "<h1>" + task + " [to-do]</h1>\n"
+                + "\n</body>\n</html>\n";
+        }
+        return xhtml;
+    }
+
+    void updateXHTML(String selectedTask, String text, Credentials credentials) {
+        try {
+            int userId = getUserId(credentials);
+            connect = DriverManager.getConnection("jdbc:mysql://" + dbServer + "/" + dbName + "?"
+                    + "user=" + username + "&password=" + password);
+            statement = connect.createStatement();
+            preparedStatement = connect.prepareStatement("update " + dbName + ".task set html = ? where user_id = ? and task = ? ;");
+            preparedStatement.setString(1, text);
+            preparedStatement.setString(2, Integer.toString(userId));
+            preparedStatement.setString(3, selectedTask);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("SQLException: " + e.getMessage());
+        } finally {
+            closeDBConnection();
+        }   
     }
 }

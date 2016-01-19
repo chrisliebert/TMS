@@ -1,5 +1,15 @@
 package tms;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
 /**
  *
  * @author Chris Liebert
@@ -48,6 +58,9 @@ public class TMSPanel extends javax.swing.JPanel {
         inProgressDeleteButton = new javax.swing.JButton();
         doneDeleteTask = new javax.swing.JButton();
         logoutButton = new javax.swing.JButton();
+        tabbedPane = new javax.swing.JTabbedPane();
+
+        setPreferredSize(new java.awt.Dimension(930, 800));
 
         newTaskButton.setText("New Task");
         newTaskButton.addActionListener(new java.awt.event.ActionListener() {
@@ -65,15 +78,50 @@ public class TMSPanel extends javax.swing.JPanel {
 
         inProgressList.setModel(tms.taskController.inProgressList);
         inProgressList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        inProgressList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inProgressListMouseClicked(evt);
+            }
+        });
+        inProgressList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                inProgressListValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(inProgressList);
 
         toDoList.setModel(tms.taskController.toDoList);
         toDoList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         toDoList.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        toDoList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                toDoListMouseClicked(evt);
+            }
+        });
+        toDoList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                toDoListValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(toDoList);
 
         doneList.setModel(tms.taskController.doneList);
         doneList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        doneList.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                doneListFocusGained(evt);
+            }
+        });
+        doneList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                doneListMouseClicked(evt);
+            }
+        });
+        doneList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                doneListValueChanged(evt);
+            }
+        });
         jScrollPane3.setViewportView(doneList);
 
         jLabel2.setText("To Do");
@@ -133,6 +181,8 @@ public class TMSPanel extends javax.swing.JPanel {
             }
         });
 
+        tabbedPane.setMinimumSize(new java.awt.Dimension(5, 300));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -146,20 +196,20 @@ public class TMSPanel extends javax.swing.JPanel {
                                 .addComponent(newTaskButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap(121, Short.MAX_VALUE)
                                 .addComponent(jLabel2)
                                 .addGap(61, 61, 61)))
                         .addComponent(toDoBeginButton)
                         .addGap(18, 18, 18)
                         .addComponent(toDoDeleteTaskButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap()
+                        .addComponent(jScrollPane1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(54, 54, 54)
@@ -168,7 +218,7 @@ public class TMSPanel extends javax.swing.JPanel {
                                 .addComponent(inProgressDeleteButton)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addGap(68, 68, 68)
@@ -177,6 +227,7 @@ public class TMSPanel extends javax.swing.JPanel {
                                 .addComponent(doneDeleteTask))))
                     .addComponent(logoutButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
+            .addComponent(tabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -197,10 +248,12 @@ public class TMSPanel extends javax.swing.JPanel {
                     .addComponent(doneDeleteTask)
                     .addComponent(toDoBeginButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane3)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -215,6 +268,7 @@ public class TMSPanel extends javax.swing.JPanel {
         if (selectedIndex < tms.taskController.toDoList.getSize() && selectedIndex > -1) {
             try {
                 tms.taskController.deleteTask(toDoList.getSelectedValue().toString());
+                tms.selectedTask = null;
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -228,6 +282,7 @@ public class TMSPanel extends javax.swing.JPanel {
         if (selectedIndex < tms.taskController.inProgressList.getSize() && selectedIndex > -1) {
             try {
                 tms.taskController.deleteTask(inProgressList.getSelectedValue().toString());
+                tms.selectedTask = null;
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -241,6 +296,7 @@ public class TMSPanel extends javax.swing.JPanel {
         if (selectedIndex < tms.taskController.doneList.getSize() && selectedIndex > -1) {
             try {
                 tms.taskController.deleteTask(doneList.getSelectedValue().toString());
+                tms.selectedTask = null;
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -281,6 +337,7 @@ public class TMSPanel extends javax.swing.JPanel {
         tms.taskController.inProgressList.clear();
         tms.loginDialog.usernameTextField.setText("");
         tms.loginDialog.passwordTextField.setText("");
+        tms.clearCredentials();
         tms.frame.setVisible(false);
         tms.loginDialog.setVisible(true);
     }//GEN-LAST:event_logoutButtonActionPerformed
@@ -288,6 +345,46 @@ public class TMSPanel extends javax.swing.JPanel {
     private void logoutButtonAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_logoutButtonAncestorAdded
         // TODO add your handling code here:
     }//GEN-LAST:event_logoutButtonAncestorAdded
+
+    private void toDoListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_toDoListValueChanged
+        if(!evt.getValueIsAdjusting()) {
+            String selectedTask = toDoList.getSelectedValue().toString();
+            onTaskSelected(selectedTask);
+        }
+    }//GEN-LAST:event_toDoListValueChanged
+
+    private void inProgressListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_inProgressListValueChanged
+            String selectedTask = inProgressList.getSelectedValue().toString();
+            onTaskSelected(selectedTask);
+    }//GEN-LAST:event_inProgressListValueChanged
+
+    private void doneListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_doneListValueChanged
+            String selectedTask = doneList.getSelectedValue().toString();
+            onTaskSelected(selectedTask);
+    }//GEN-LAST:event_doneListValueChanged
+
+    private void doneListFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_doneListFocusGained
+            String selectedTask = doneList.getSelectedValue().toString();
+            onTaskSelected(selectedTask);
+    }//GEN-LAST:event_doneListFocusGained
+
+    private void inProgressListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inProgressListMouseClicked
+            if(inProgressList.getModel().getSize() == 0) return;
+            Object selectedTask = inProgressList.getSelectedValue();
+            if(selectedTask != null) onTaskSelected(selectedTask.toString());
+    }//GEN-LAST:event_inProgressListMouseClicked
+
+    private void doneListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doneListMouseClicked
+            if(doneList.getModel().getSize() == 0) return;
+            Object selectedTask = doneList.getSelectedValue();
+            if(selectedTask != null) onTaskSelected(selectedTask.toString());
+    }//GEN-LAST:event_doneListMouseClicked
+
+    private void toDoListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toDoListMouseClicked
+            if(toDoList.getModel().getSize() == 0) return;
+            Object selectedTask = toDoList.getSelectedValue();
+            if(selectedTask != null) onTaskSelected(selectedTask.toString());
+    }//GEN-LAST:event_toDoListMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -305,8 +402,28 @@ public class TMSPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton logoutButton;
     private javax.swing.JButton newTaskButton;
+    public javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JButton toDoBeginButton;
     private javax.swing.JButton toDoDeleteTaskButton;
     protected javax.swing.JList toDoList;
     // End of variables declaration//GEN-END:variables
+
+    private void onTaskSelected(String selectedTask) {
+        try {
+            tms.selectedTask = selectedTask;
+            String xhtml = tms.getDBAdapter().getXHTML(tms.selectedTask, tms.getCredentials());
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new ByteArrayInputStream(xhtml.getBytes()));
+            tms.xhtmlPanel.setDocument(doc);
+            tms.textArea.setText(xhtml);
+        } catch (SAXException ex) {
+            Logger.getLogger(TMSPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(TMSPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(TMSPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

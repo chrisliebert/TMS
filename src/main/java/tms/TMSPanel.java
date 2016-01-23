@@ -1,13 +1,16 @@
 package tms;
 
+import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JScrollPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
+import org.xhtmlrenderer.simple.XHTMLPanel;
 import org.xml.sax.SAXException;
 
 /**
@@ -338,6 +341,22 @@ public class TMSPanel extends javax.swing.JPanel {
         tms.loginDialog.usernameTextField.setText("");
         tms.loginDialog.passwordTextField.setText("");
         tms.clearCredentials();
+        tms.textArea.setText("");
+        tms.xhtmlPanel = new XHTMLPanel();
+        tms.xhtmlPanel.setName("Task Description");
+        
+        JScrollPane scrollPane = new JScrollPane(tms.xhtmlPanel);
+        scrollPane.setName("Description");
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        tms.panel.tabbedPane.removeAll();
+        tms.panel.tabbedPane.add(scrollPane);
+        PropertyChangeListener pl = new TMSGUI.EditorPropertyChangeListener(tms);
+        HTMLEditor editorPanel = new HTMLEditor(tms);
+        editorPanel.scrollPane.add(tms.textArea);
+        editorPanel.setName("HTML");
+        tms.panel.tabbedPane.add(editorPanel);
+        tms.textArea.addPropertyChangeListener(pl);
+        
         tms.frame.setVisible(false);
         tms.loginDialog.setVisible(true);
     }//GEN-LAST:event_logoutButtonActionPerformed

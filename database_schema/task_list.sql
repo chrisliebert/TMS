@@ -46,6 +46,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `user` (`id`, `username`, `password`) VALUES
+(1, 'test', 'pass');
+
 --
 -- Indexes for dumped tables
 --

@@ -14,6 +14,7 @@ public class TestData {
     }
     
     public final static int getValidTestCredentialsId() {
+		// This is the ID of the user table for valid test credtentials
         return 1;
     }
 

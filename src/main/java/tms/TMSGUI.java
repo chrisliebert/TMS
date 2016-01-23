@@ -96,7 +96,7 @@ public class TMSGUI {
         
         textArea = new RSyntaxTextArea(20, 60);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
-        textArea.setCodeFoldingEnabled(true);
+        //textArea.setCodeFoldingEnabled(true);
 
         JScrollPane scrollPane = new JScrollPane(xhtmlPanel);
         scrollPane.setName("Description");
@@ -153,7 +153,7 @@ public class TMSGUI {
         return selectedTask;
     }
 
-    private static class EditorPropertyChangeListener implements PropertyChangeListener {
+    public static class EditorPropertyChangeListener implements PropertyChangeListener {
         private TMSGUI tms;
         public EditorPropertyChangeListener(TMSGUI _tms) {
             tms = _tms;

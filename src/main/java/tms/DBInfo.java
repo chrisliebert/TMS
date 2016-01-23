@@ -14,7 +14,7 @@ public class DBInfo {
 
     // Database name
     public static final String getDatabaseName() {
-        return "task_list";
+        return "tmsnohtml";
     }
 
     // Database username

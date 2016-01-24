@@ -164,6 +164,14 @@
         </executions>
       </plugin>
       <plugin>
+       <groupId>org.codehaus.mojo</groupId>
+         <artifactId>exec-maven-plugin</artifactId>
+         <version>1.2.1</version>
+         <configuration>
+          <mainClass>tms.TMSGUI</mainClass>
+         </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <executions>

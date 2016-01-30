@@ -10,7 +10,7 @@ import javax.swing.JFrame;
  */
 public class TestData {
     public final static Credentials getValidTestCredentials() {
-        return new Credentials("test", "pass");
+        return new Credentials("test", "d74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1");
     }
     
     public final static int getValidTestCredentialsId() {

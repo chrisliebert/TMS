@@ -383,8 +383,10 @@ public class TMSPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_doneListValueChanged
 
     private void doneListFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_doneListFocusGained
-            String selectedTask = doneList.getSelectedValue().toString();
-            onTaskSelected(selectedTask);
+    	 	if(doneList.getModel().getSize() == 0) return;    
+    	 	Object selectedTask = doneList.getSelectedValue();
+    		if(selectedTask != null) onTaskSelected(selectedTask.toString());
+            
     }//GEN-LAST:event_doneListFocusGained
 
     private void inProgressListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inProgressListMouseClicked

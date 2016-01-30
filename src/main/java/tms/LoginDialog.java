@@ -1,5 +1,8 @@
 package tms;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
@@ -94,10 +97,22 @@ public class LoginDialog extends javax.swing.JDialog {
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // The login button was pressed
         String usernameStr = usernameTextField.getText();
-        String passwordStr = new String(passwordTextField.getPassword());
-        Credentials credentials = new Credentials(usernameStr, passwordStr);
+        String passwordStr = "";
+        MessageDigest digest = null;     
+
         try {
-            login(credentials);
+        	digest = MessageDigest.getInstance("SHA-256");
+            String pw = new String(passwordTextField.getPassword());
+            byte[] hash = digest.digest(pw.getBytes(StandardCharsets.UTF_8));
+            StringBuffer hexStrBuf = new StringBuffer();
+            for(int i=0; i<hash.length; i++) {
+                String hexStr = Integer.toHexString(hash[i] & 0xff);
+                if(hexStr.length() == 1) hexStrBuf.append('0');
+                hexStrBuf.append(hexStr);
+            }
+			passwordStr = hexStrBuf.toString();
+        	login(new Credentials(usernameStr, passwordStr));
+            
         } catch (Exception e) {
             // Show an error dialog
             JOptionPane.showMessageDialog(this,

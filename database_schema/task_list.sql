@@ -46,8 +46,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+-- test password is SHA-256 hash of 'pass'
 INSERT INTO `user` (`id`, `username`, `password`) VALUES
-(1, 'test', 'pass');
+(1, 'test', 'd74ff0ee8da3b9806b18c877dbf29bbde50b5bd8e4dad7a3a725000feb82e8f1');
 
 --
 -- Indexes for dumped tables

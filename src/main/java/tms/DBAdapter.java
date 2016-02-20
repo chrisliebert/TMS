@@ -1,5 +1,7 @@
 package tms;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -38,6 +40,18 @@ public class DBAdapter {
 
     public boolean authorizeUser(Credentials credentials) throws SQLException {
         try {
+        	 MessageDigest digest = MessageDigest.getInstance("SHA-256");
+       
+             byte[] hash = digest.digest(credentials.getPassword().getBytes(StandardCharsets.UTF_8));
+             StringBuffer hexStrBuf = new StringBuffer();
+             for(int i=0; i<hash.length; i++) {
+                 String hexStr = Integer.toHexString(hash[i] & 0xff);
+                 if(hexStr.length() == 1) hexStrBuf.append('0');
+                 hexStrBuf.append(hexStr);
+             }
+
+             String passHash = hexStrBuf.toString();
+
             // Connect to MySQL server
             connect = DriverManager.getConnection("jdbc:mysql://" + dbServer + "/" + dbName + "?"
                     + "user=" + username + "&password=" + password);
@@ -50,13 +64,12 @@ public class DBAdapter {
             while (resultSet.next()) {
                 // If username and password match the record, return true;
                 if (resultSet.getString("username").equals(credentials.getUsername())
-                        && resultSet.getString("password").equals(credentials.getPassword())) {
+                        && resultSet.getString("password").equals(passHash)) {
                     return true;
                 }
             }
-        } catch (SQLException e) {
-            System.err.println("SQLException: " + e.getMessage());
-            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             closeDBConnection();
         }
@@ -162,8 +175,7 @@ public class DBAdapter {
             statement = connect.createStatement();
             resultSet = statement.executeQuery("select * from " + dbName + ".user ;");
             while (resultSet.next()) {
-                if (resultSet.getString("username").equals(credentials.getUsername())
-                        && resultSet.getString("password").equals(credentials.getPassword())) {
+                if (resultSet.getString("username").equals(credentials.getUsername())) {
                     return Integer.parseInt(resultSet.getString("id"));
                 }
             }

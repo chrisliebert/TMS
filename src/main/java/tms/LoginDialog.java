@@ -96,30 +96,8 @@ public class LoginDialog extends javax.swing.JDialog {
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // The login button was pressed
-        String usernameStr = usernameTextField.getText();
-        String passwordStr = "";
-        MessageDigest digest = null;     
-
-        try {
-        	digest = MessageDigest.getInstance("SHA-256");
-            String pw = new String(passwordTextField.getPassword());
-            byte[] hash = digest.digest(pw.getBytes(StandardCharsets.UTF_8));
-            StringBuffer hexStrBuf = new StringBuffer();
-            for(int i=0; i<hash.length; i++) {
-                String hexStr = Integer.toHexString(hash[i] & 0xff);
-                if(hexStr.length() == 1) hexStrBuf.append('0');
-                hexStrBuf.append(hexStr);
-            }
-			passwordStr = hexStrBuf.toString();
-        	login(new Credentials(usernameStr, passwordStr));
-            
-        } catch (Exception e) {
-            // Show an error dialog
-            JOptionPane.showMessageDialog(this,
-                    "Error: " + e.getMessage(),
-                    "Unable to Login",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+		login(new Credentials(usernameTextField.getText(), new String(passwordTextField.getPassword())));
+    	
     }//GEN-LAST:event_loginButtonActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
@@ -128,12 +106,12 @@ public class LoginDialog extends javax.swing.JDialog {
 
     private void loginButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_loginButtonKeyPressed
         // Trigger login button if key is pressed and button is selected
-        loginButtonActionPerformed(null);
+    	login(new Credentials(usernameTextField.getText(), new String(passwordTextField.getPassword())));
     }//GEN-LAST:event_loginButtonKeyPressed
 
     private void passwordTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordTextFieldActionPerformed
         // Trigger login button if return is pressed in the password field
-        loginButtonActionPerformed(null);
+    	login(new Credentials(usernameTextField.getText(), new String(passwordTextField.getPassword())));
     }//GEN-LAST:event_passwordTextFieldActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

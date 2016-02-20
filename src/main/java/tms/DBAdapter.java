@@ -2,6 +2,7 @@ package tms;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -40,18 +41,6 @@ public class DBAdapter {
 
     public boolean authorizeUser(Credentials credentials) throws SQLException {
         try {
-        	 MessageDigest digest = MessageDigest.getInstance("SHA-256");
-       
-             byte[] hash = digest.digest(credentials.getPassword().getBytes(StandardCharsets.UTF_8));
-             StringBuffer hexStrBuf = new StringBuffer();
-             for(int i=0; i<hash.length; i++) {
-                 String hexStr = Integer.toHexString(hash[i] & 0xff);
-                 if(hexStr.length() == 1) hexStrBuf.append('0');
-                 hexStrBuf.append(hexStr);
-             }
-
-             String passHash = hexStrBuf.toString();
-
             // Connect to MySQL server
             connect = DriverManager.getConnection("jdbc:mysql://" + dbServer + "/" + dbName + "?"
                     + "user=" + username + "&password=" + password);
@@ -64,7 +53,7 @@ public class DBAdapter {
             while (resultSet.next()) {
                 // If username and password match the record, return true;
                 if (resultSet.getString("username").equals(credentials.getUsername())
-                        && resultSet.getString("password").equals(passHash)) {
+                        && resultSet.getString("password").equals(credentials.getPassword())) {
                     return true;
                 }
             }
@@ -78,7 +67,26 @@ public class DBAdapter {
         return false;
     }
 
-    // You need to close the resultSet
+    public String getPasswordHash(String password) {
+    	MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+        
+        byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        StringBuffer hexStrBuf = new StringBuffer();
+        for(int i=0; i<hash.length; i++) {
+            String hexStr = Integer.toHexString(hash[i] & 0xff);
+            if(hexStr.length() == 1) hexStrBuf.append('0');
+            hexStrBuf.append(hexStr);
+        }
+		return  hexStrBuf.toString();
+	}
+
+	// You need to close the resultSet
     private void closeDBConnection() {
         try {
             if (resultSet != null) {

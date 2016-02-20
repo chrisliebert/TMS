@@ -96,7 +96,7 @@ public class LoginDialog extends javax.swing.JDialog {
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
         // The login button was pressed
-		login(new Credentials(usernameTextField.getText(), new String(passwordTextField.getPassword())));
+		login();
     	
     }//GEN-LAST:event_loginButtonActionPerformed
 
@@ -106,12 +106,12 @@ public class LoginDialog extends javax.swing.JDialog {
 
     private void loginButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_loginButtonKeyPressed
         // Trigger login button if key is pressed and button is selected
-    	login(new Credentials(usernameTextField.getText(), new String(passwordTextField.getPassword())));
-    }//GEN-LAST:event_loginButtonKeyPressed
+    	login();
+    	}//GEN-LAST:event_loginButtonKeyPressed
 
     private void passwordTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordTextFieldActionPerformed
         // Trigger login button if return is pressed in the password field
-    	login(new Credentials(usernameTextField.getText(), new String(passwordTextField.getPassword())));
+    	login();
     }//GEN-LAST:event_passwordTextFieldActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -122,7 +122,7 @@ public class LoginDialog extends javax.swing.JDialog {
 
     // Validate and set the credentials
     // Show the main UI once tasks are downloaded
-    public void login(Credentials credentials) {
+    public void login(Credentials credentials) throws SQLException {
         try {
             if (tms.getDBAdapter().authorizeUser(credentials)) {
                 // Hide the dialog
@@ -148,6 +148,17 @@ public class LoginDialog extends javax.swing.JDialog {
                     "Unable to connect to TMS database: " + e.getLocalizedMessage(),
                     "Network Error",
                     JOptionPane.ERROR_MESSAGE);
+            throw e;
         }
+    }
+    
+    public void login() {
+    	Credentials credentials = new Credentials(usernameTextField.getText(), tms.getDBAdapter().getPasswordHash(new String(passwordTextField.getPassword())));
+    	try {
+			login(credentials);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }

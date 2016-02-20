@@ -42,7 +42,7 @@ public class TMSGUI_LoginDialogIT {
         System.out.println("testAccessTasks");
 
         // Arrange
-        Credentials credentials = new Credentials("test", "pass");
+        Credentials credentials = TestData.getValidTestCredentials();
         TMSGUI tms = TestData.getTMSTestInstance();
         String s = "CreateTaskIntegrationTestString";
         boolean foundTask = false;

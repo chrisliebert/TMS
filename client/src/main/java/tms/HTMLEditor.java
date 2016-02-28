@@ -1,5 +1,6 @@
 package tms;
 
+import java.awt.Color;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -16,12 +17,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.BadLocationException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JComponent;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle.ComponentPlacement;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
 
 /**
  *
@@ -52,6 +66,22 @@ public class HTMLEditor extends javax.swing.JPanel {
         importButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
 
+        final String key = "Save";
+        // Enable Ctrl+S hotkey
+        Action saveAction = new AbstractAction(key) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				saveButton.doClick(); // Animate the save button
+				saveButtonMouseClicked(null); // Trigger the save action
+			}
+        };
+
+        saveButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+                KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK), key);
+         
+         
+        saveButton.getActionMap().put(key, saveAction);
+        
         scrollPane.setName(""); // NOI18N
 
         exportButton.setText("Export");
@@ -77,31 +107,31 @@ public class HTMLEditor extends javax.swing.JPanel {
         });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(importButton)
-                .addGap(18, 18, 18)
-                .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(saveButton)
-                .addContainerGap())
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(saveButton)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(importButton)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(exportButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        			.addContainerGap(241, Short.MAX_VALUE))
+        		.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(importButton)
-                    .addComponent(saveButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+        	layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(Alignment.LEADING, layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(saveButton)
+        				.addComponent(importButton)
+        				.addComponent(exportButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+        			.addContainerGap())
         );
+        this.setLayout(layout);
     }// </editor-fold>//GEN-END:initComponents
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
@@ -134,15 +164,44 @@ public class HTMLEditor extends javax.swing.JPanel {
             doc = builder.parse(new ByteArrayInputStream(xhtml.getBytes()));
             tms.xhtmlPanel.setDocument(doc);
             tms.xhtmlPanel.updateUI();
+            tms.getDBAdapter().updateXHTML(tms.selectedTask, xhtml, tms.getCredentials());
+            
         } catch (SAXException ex) {
-            JOptionPane.showMessageDialog(tms.frame, ex.getMessage());
+        	/*
+        	String exStr = ex.toString();
+        	exStr = exStr.substring(exStr.indexOf("lineNumber: "));
+        	int firstSemiPos = exStr.indexOf(";");
+        	String lineNumberStr = exStr.substring(exStr.indexOf(": ") + 2, firstSemiPos);
+        	String columnNumberStr = exStr.substring(firstSemiPos);
+        	columnNumberStr = columnNumberStr.substring(columnNumberStr.indexOf(": ") + 2);
+        	columnNumberStr = columnNumberStr.substring(0, columnNumberStr.indexOf(";"));
+        	
+        	int lineNumber = Integer.parseInt(lineNumberStr);
+        	int columnNumber = Integer.parseInt(columnNumberStr);
+        	
+        	// select the bad line
+        	try {
+				Object tag = tms.textArea.addLineHighlight(lineNumber - 1, Color.RED);
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	*/
+        	JOptionPane.showMessageDialog(tms.frame, ex.getMessage());
             Logger.getLogger(HTMLEditor.class.getName()).log(Level.SEVERE, null, ex);
+            
         } catch (IOException ex) {
+        	JOptionPane.showMessageDialog(tms.frame, ex.getMessage());
             Logger.getLogger(HTMLEditor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParserConfigurationException ex) {
+        	JOptionPane.showMessageDialog(tms.frame, ex.getMessage());
             Logger.getLogger(HTMLEditor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        tms.getDBAdapter().updateXHTML(tms.selectedTask, xhtml, tms.getCredentials());
+        } catch (Exception e) {
+        	//JOptionPane.showMessageDialog(tms.frame, e.getMessage());
+			e.printStackTrace();
+		}
+       
+        
     }//GEN-LAST:event_saveButtonMouseClicked
 
     private void importButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_importButtonMouseClicked

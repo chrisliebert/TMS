@@ -272,6 +272,8 @@ public class TMSPanel extends javax.swing.JPanel {
             try {
                 tms.taskController.deleteTask(toDoList.getSelectedValue().toString());
                 tms.selectedTask = null;
+                tms.textArea.setText("");
+                tms.setXHTMLDocument("");
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -286,6 +288,8 @@ public class TMSPanel extends javax.swing.JPanel {
             try {
                 tms.taskController.deleteTask(inProgressList.getSelectedValue().toString());
                 tms.selectedTask = null;
+                tms.textArea.setText("");
+                tms.setXHTMLDocument("");
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
@@ -300,6 +304,8 @@ public class TMSPanel extends javax.swing.JPanel {
             try {
                 tms.taskController.deleteTask(doneList.getSelectedValue().toString());
                 tms.selectedTask = null;
+                tms.textArea.setText("");
+                tms.setXHTMLDocument("");
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }

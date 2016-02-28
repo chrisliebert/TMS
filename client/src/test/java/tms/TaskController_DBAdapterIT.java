@@ -118,6 +118,7 @@ public class TaskController_DBAdapterIT {
         // Arrange
         // Load task controller from global test object
         TaskController taskController = tms.taskController;
+        taskController.setCredentials(TestData.getValidTestCredentials());
         String taskString = "UpdateTaskString";
         boolean foundTask = false;
         

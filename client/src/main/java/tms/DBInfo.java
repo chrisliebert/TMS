@@ -24,6 +24,6 @@ public class DBInfo {
 
     // Database password
     public static final String getDatabasePassword() {
-        return "";
+        return "password";
     }
 }
